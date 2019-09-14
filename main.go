@@ -16,6 +16,9 @@ type envConfig struct {
 
 	// BotID is bot user ID.
 	BotID string `envconfig:"BOT_ID" required:"true"`
+
+	// HotpepperKey is HotPepper API KEY
+	HotpepperKey string `envconfig:"HOTPEPPER_KEY" required:"true"`
 }
 
 func main() {
@@ -29,14 +32,17 @@ func _main(args []string) int {
 		return 1
 	}
 
+	hotPepper := NewClient(env.HotpepperKey)
+
 	client := slack.New(
 		env.BotToken,
 		// slack.OptionDebug(true),
 		// slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
 	slackListener := &SlackListener{
-		client:    client,
-		botUserID: env.BotID,
+		client:           client,
+		botUserID:        env.BotID,
+		restaurantClient: hotPepper,
 	}
 
 	slackListener.ListenAndResponse()

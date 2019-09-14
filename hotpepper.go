@@ -3,11 +3,20 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"net/url"
 )
 
-var KEY = ""
+// TODO: package分けてインターフェースにする
+// Restaurant サービスに依存しない汎用的なデータクラス
+type Restaurant struct {
+	Name        string
+	ImageURL    string
+	Description string
+	URL         string
+	LunchURL    string
+}
 
 // HotPepper クライアントのためのtype
 type HotPepper struct {
@@ -26,12 +35,12 @@ func NewClient(key string) *HotPepper {
 
 type responseResults struct {
 	Result struct {
-		Shops []Shop `json:"shop"`
+		Shops []responseShop `json:"shop"`
 	} `json:"results"`
 }
 
 // Shop 店舗の情報
-type Shop struct {
+type responseShop struct {
 	ID        string
 	Name      string
 	LogoImage string `json:"logo_image"`
@@ -41,12 +50,7 @@ type Shop struct {
 	}
 }
 
-// LunchURL ランチメニューのurl。実際には404のことがある
-func (s *Shop) LunchURL() string {
-	return fmt.Sprintf("https://www.hotpepper.jp/str%v/lunch/", s.ID)
-}
-
-func (h *HotPepper) fetch(keyword string) ([]Shop, error) {
+func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 	values := url.Values{}
 	values.Add("key", h.key)       // APIキー
 	values.Add("keyword", keyword) // 検索ワード
@@ -71,15 +75,23 @@ func (h *HotPepper) fetch(keyword string) ([]Shop, error) {
 		return nil, err
 	}
 
-	return data.Result.Shops, nil
+	restaurants := make([]Restaurant, len(data.Result.Shops))
+	for i, shop := range data.Result.Shops {
+		restaurants[i] = Restaurant{
+			Name:        shop.Name,
+			ImageURL:    shop.LogoImage,
+			Description: shop.Catch,
+			URL:         shop.URLs.PC,
+			LunchURL:    fmt.Sprintf("https://www.hotpepper.jp/str%v/lunch/", shop.ID),
+		}
+	}
+
+	return restaurants, nil
 }
 
-// func main() {
-// 	client := NewClient(KEY)
-// 	shops, _ := client.fetch("和食")
-
-// 	for _, shop := range shops {
-// 		pretty.Println(shop)
-// 		pretty.Println(shop.LunchURL())
-// 	}
-// }
+func (h *HotPepper) fetchRandom(keyword string, limit int) ([]Restaurant, error) {
+	shops, err := h.fetch(keyword)
+	// TODO: shuffleする
+	i := int(math.Min(float64(cap(shops)), float64(limit))) - 1
+	return shops[:i], err
+}
