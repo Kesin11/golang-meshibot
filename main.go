@@ -35,8 +35,8 @@ func _main(args []string) int {
 		// slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
 	slackListener := &SlackListener{
-		Client:    client,
-		BotUserID: env.BotID,
+		client:    client,
+		botUserID: env.BotID,
 	}
 
 	slackListener.ListenAndResponse()

@@ -30,7 +30,7 @@ func createHotelBlock(hotel Hotel) (*slack.SectionBlock, *slack.ContextBlock) {
 	return section, context
 }
 
-func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM, client *slack.Client) error {
+func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 	channelID := msg.Channel
 	text := msg.Text
 	strings := strings.Split(text, " ")
@@ -87,7 +87,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM, client *sla
 	)
 	msgOptionIconURL := slack.MsgOptionIconURL("https://pbs.twimg.com/profile_images/1146470842546548737/D9rq59or_200x200.jpg")
 
-	if _, _, err := client.PostMessage(channelID, msgOptionBlock, msgOptionIconURL); err != nil {
+	if _, _, err := s.client.PostMessage(channelID, msgOptionBlock, msgOptionIconURL); err != nil {
 		return fmt.Errorf("failed to post message: %s", err)
 	}
 
@@ -95,27 +95,28 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM, client *sla
 }
 
 func (s *SlackListener) isMentionToBot(strings []string) bool {
-	if strings[0] == fmt.Sprintf("<@%v>", s.BotUserID) {
+	if strings[0] == fmt.Sprintf("<@%v>", s.botUserID) {
 		return true
 	}
 	return false
 }
 
+// SlackListener RTMとbotからの返信を扱う
 type SlackListener struct {
-	Client    *slack.Client
-	BotUserID string
+	client    *slack.Client
+	botUserID string
 }
 
-// SlackのRTMを受信して処理を振り分ける
-func (slackListener SlackListener) ListenAndResponse() error {
-	rtm := slackListener.Client.NewRTM()
+// ListenAndResponse SlackのRTMを受信して処理を振り分ける
+func (s SlackListener) ListenAndResponse() error {
+	rtm := s.client.NewRTM()
 	go rtm.ManageConnection()
 
 	for msg := range rtm.IncomingEvents {
 		switch ev := msg.Data.(type) {
 		case *slack.MessageEvent:
 			spew.Dump(ev)
-			slackListener.handleMessage(ev.Msg, rtm, slackListener.Client)
+			s.handleMessage(ev.Msg, rtm)
 
 		case *slack.RTMError:
 			return fmt.Errorf("Error: %s", ev.Error())
