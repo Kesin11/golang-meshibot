@@ -16,6 +16,8 @@ type Restaurant struct {
 	Description string
 	URL         string
 	LunchURL    string
+	Lat         string
+	Lng         string
 }
 
 // HotPepper クライアントのためのtype
@@ -41,11 +43,17 @@ type responseResults struct {
 
 // Shop 店舗の情報
 type responseShop struct {
-	ID        string
-	Name      string
-	LogoImage string `json:"logo_image"`
-	Catch     string
-	URLs      struct {
+	ID    string
+	Name  string
+	Lat   string
+	Lng   string
+	Photo struct {
+		PC struct {
+			M string
+		}
+	}
+	Catch string
+	URLs  struct {
 		PC string
 	}
 }
@@ -79,10 +87,12 @@ func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 	for i, shop := range data.Result.Shops {
 		restaurants[i] = Restaurant{
 			Name:        shop.Name,
-			ImageURL:    shop.LogoImage,
+			ImageURL:    shop.Photo.PC.M,
 			Description: shop.Catch,
 			URL:         shop.URLs.PC,
 			LunchURL:    fmt.Sprintf("https://www.hotpepper.jp/str%v/lunch/", shop.ID),
+			Lat:         shop.Lat,
+			Lng:         shop.Lng,
 		}
 	}
 
