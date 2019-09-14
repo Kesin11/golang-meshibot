@@ -30,22 +30,7 @@ func createHotelBlock(hotel Hotel) (*slack.SectionBlock, *slack.ContextBlock) {
 	return section, context
 }
 
-func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
-	channelID := msg.Channel
-	text := msg.Text
-	strings := strings.Split(text, " ")
-
-	if !s.isMentionToBot(strings) {
-		return nil
-	}
-	if len(strings) < 2 {
-		rtm.SendMessage(rtm.NewOutgoingMessage("検索ワードも入力してください", channelID))
-		return nil
-	}
-
-	// 検索ワード
-	// term := strings[1]
-
+func buildMsgOptionBlock() slack.MsgOption {
 	// Build Header Section Block, includes text and overflow menu
 	headerText := slack.NewTextBlockObject("mrkdwn", "お店が見つかりました", false, false)
 
@@ -73,7 +58,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 	// Third Hotel Listing
 	hotelThreeSection, hotelThreeContext := createHotelBlock(hotel)
 
-	msgOptionBlock := slack.MsgOptionBlocks(
+	return slack.MsgOptionBlocks(
 		headerSection,
 		divSection,
 		hotelOneSection,
@@ -85,6 +70,25 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 		hotelThreeSection,
 		hotelThreeContext,
 	)
+}
+
+func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
+	channelID := msg.Channel
+	text := msg.Text
+	strings := strings.Split(text, " ")
+
+	if !s.isMentionToBot(strings) {
+		return nil
+	}
+	if len(strings) < 2 {
+		rtm.SendMessage(rtm.NewOutgoingMessage("検索ワードも入力してください", channelID))
+		return nil
+	}
+
+	// 検索ワード
+	// term := strings[1]
+
+	msgOptionBlock := buildMsgOptionBlock()
 	msgOptionIconURL := slack.MsgOptionIconURL("https://pbs.twimg.com/profile_images/1146470842546548737/D9rq59or_200x200.jpg")
 
 	if _, _, err := s.client.PostMessage(channelID, msgOptionBlock, msgOptionIconURL); err != nil {
