@@ -8,7 +8,6 @@ import (
 	"net/url"
 )
 
-// TODO: package分けてインターフェースにする
 // Restaurant サービスに依存しない汎用的なデータクラス
 type Restaurant struct {
 	Name        string
@@ -26,8 +25,8 @@ type HotPepper struct {
 	baseURL string
 }
 
-// NewClient return HotPepper with default value
-func NewClient(key string) *HotPepper {
+// NewHotPepperClient return HotPepper with default value
+func NewHotPepperClient(key string) *HotPepper {
 	client := new(HotPepper)
 	client.key = key
 	client.baseURL = "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/"

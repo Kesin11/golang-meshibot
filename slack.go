@@ -84,11 +84,16 @@ func (s *SlackListener) isMentionToBot(strings []string) bool {
 	return false
 }
 
+// RestaurantClient レストラン取得のAPIクライアントを差し替え可能にするため
+type RestaurantClient interface {
+	fetchRandom(keyword string, limit int) ([]Restaurant, error)
+}
+
 // SlackListener RTMとbotからの返信を扱う
 type SlackListener struct {
 	client           *slack.Client
 	botUserID        string
-	restaurantClient *HotPepper
+	restaurantClient RestaurantClient
 }
 
 // ListenAndResponse SlackのRTMを受信して処理を振り分ける

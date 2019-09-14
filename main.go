@@ -32,7 +32,7 @@ func _main(args []string) int {
 		return 1
 	}
 
-	hotPepper := NewClient(env.HotpepperKey)
+	hotPepper := NewHotPepperClient(env.HotpepperKey)
 
 	client := slack.New(
 		env.BotToken,
