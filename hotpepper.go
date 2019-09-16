@@ -10,6 +10,14 @@ import (
 	"time"
 )
 
+// HotPepper APIの仕様
+// 1: 300m
+// 2: 500m
+// 3: 1000m (初期値)
+// 4: 2000m
+// 5: 3000m
+const searchRange = "3"
+
 // Restaurant サービスに依存しない汎用的なデータクラス
 type Restaurant struct {
 	Name        string
@@ -64,9 +72,9 @@ func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 	values.Add("key", h.key)       // APIキー
 	values.Add("keyword", keyword) // 検索ワード
 	values.Add("lat", "35.659104")
-	values.Add("lng", "139.703742") // ヒカリエ中心
-	values.Add("range", "3")        // 1000m
-	values.Add("lunch", "1")        // true
+	values.Add("lng", "139.703742")  // ヒカリエ中心
+	values.Add("range", searchRange) // 検索範囲
+	values.Add("lunch", "1")         // true
 	values.Add("format", "json")
 
 	res, err := http.Get(h.baseURL + "?" + values.Encode())
