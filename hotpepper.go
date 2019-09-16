@@ -121,6 +121,6 @@ func (h *HotPepper) fetchRandom(keyword string, limit int) ([]Restaurant, error)
 	})
 
 	// 先頭からlimit分だけをreturn。要素数がlimit以下の場合は、存在する分だけreturn
-	i := int(math.Min(float64(cap(restaurants)), float64(limit))) - 1
+	i := int(math.Min(float64(cap(restaurants)), float64(limit)))
 	return restaurants[:i], err
 }

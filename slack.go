@@ -9,6 +9,7 @@ import (
 )
 
 const botImageURL = "https://pbs.twimg.com/profile_images/647226377066840064/JPt0F01G_200x200.png"
+const resultLimit = 3
 
 func buildRetaurantBlock(r Restaurant) *slack.SectionBlock {
 	infoText := fmt.Sprintf("*<%v|%v>*\n%v\n*<%v|ランチメニュー>*", r.URL, r.Name, r.Description, r.LunchURL)
@@ -53,7 +54,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 
 	// 検索ワード
 	keyword := strings[1]
-	restaurants, err := s.restaurantClient.fetchRandom(keyword, 5)
+	restaurants, err := s.restaurantClient.fetchRandom(keyword, resultLimit)
 	if err != nil {
 		return fmt.Errorf("failed to fetch restaurant: %s", err)
 	}
