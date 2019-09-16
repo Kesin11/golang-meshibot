@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -17,6 +18,12 @@ import (
 // 4: 2000m
 // 5: 3000m
 const searchRange = "3"
+
+// "宮益坂": "X095"
+// "渋谷東口": "XA0U"
+// "桜丘": "XA0V"
+// "渋谷新南口": "XA9G"
+var searchSmallArea = []string{"X095", "XA0U", "XA0V", "XA9G"}
 
 // Restaurant サービスに依存しない汎用的なデータクラス
 type Restaurant struct {
@@ -72,9 +79,9 @@ func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 	values.Add("key", h.key)       // APIキー
 	values.Add("keyword", keyword) // 検索ワード
 	values.Add("lat", "35.659104")
-	values.Add("lng", "139.703742")  // ヒカリエ中心
-	values.Add("range", searchRange) // 検索範囲
-	values.Add("lunch", "1")         // true
+	values.Add("lng", "139.703742")                              // ヒカリエ中心
+	values.Add("range", searchRange)                             // 検索範囲
+	values.Add("small_area", strings.Join(searchSmallArea, ",")) // 検索エリア限定
 	values.Add("format", "json")
 
 	res, err := http.Get(h.baseURL + "?" + values.Encode())
