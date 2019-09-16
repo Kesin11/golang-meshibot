@@ -27,19 +27,13 @@ func buildMsgOptionBlock(restaurants []Restaurant) slack.MsgOption {
 	// Shared Divider
 	divSection := slack.NewDividerBlock()
 
-	section1 := buildRetaurantBlock(restaurants[0])
-	section2 := buildRetaurantBlock(restaurants[1])
-	section3 := buildRetaurantBlock(restaurants[2])
+	blocks := []slack.Block{headerSection}
+	for _, restaurant := range restaurants {
+		blocks = append(blocks, divSection)
+		blocks = append(blocks, buildRetaurantBlock(restaurant))
+	}
 
-	return slack.MsgOptionBlocks(
-		headerSection,
-		divSection,
-		section1,
-		divSection,
-		section2,
-		divSection,
-		section3,
-	)
+	return slack.MsgOptionBlocks(blocks...)
 }
 
 func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
