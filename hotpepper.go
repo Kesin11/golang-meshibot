@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // Restaurant サービスに依存しない汎用的なデータクラス
@@ -99,8 +101,18 @@ func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 }
 
 func (h *HotPepper) fetchRandom(keyword string, limit int) ([]Restaurant, error) {
-	shops, err := h.fetch(keyword)
-	// TODO: shuffleする
-	i := int(math.Min(float64(cap(shops)), float64(limit))) - 1
-	return shops[:i], err
+	restaurants, err := h.fetch(keyword)
+	if len(restaurants) < 1 {
+		return []Restaurant{}, err
+	}
+
+	// shuffle
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(restaurants), func(i, j int) {
+		restaurants[i], restaurants[j] = restaurants[j], restaurants[i]
+	})
+
+	// 先頭からlimit分だけをreturn。要素数がlimit以下の場合は、存在する分だけreturn
+	i := int(math.Min(float64(cap(restaurants)), float64(limit))) - 1
+	return restaurants[:i], err
 }
