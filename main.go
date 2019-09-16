@@ -10,23 +10,12 @@ import (
 	"github.com/nlopes/slack"
 )
 
-type envConfig struct {
-	// BotToken is bot user token to access to slack API.
-	BotToken string `envconfig:"BOT_TOKEN" required:"true"`
-
-	// BotID is bot user ID.
-	BotID string `envconfig:"BOT_ID" required:"true"`
-
-	// HotpepperKey is HotPepper API KEY
-	HotpepperKey string `envconfig:"HOTPEPPER_KEY" required:"true"`
-}
-
 func main() {
 	os.Exit(_main(os.Args[1:]))
 }
 
 func _main(args []string) int {
-	var env envConfig
+	var env EnvConfig
 	if err := envconfig.Process("", &env); err != nil {
 		log.Printf("[ERROR] Failed to process env var: %s", err)
 		return 1
