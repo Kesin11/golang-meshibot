@@ -8,6 +8,8 @@ import (
 	"github.com/nlopes/slack"
 )
 
+const botImageURL = "https://pbs.twimg.com/profile_images/647226377066840064/JPt0F01G_200x200.png"
+
 func buildRetaurantBlock(r Restaurant) *slack.SectionBlock {
 	infoText := fmt.Sprintf("*<%v|%v>*\n%v\n*<%v|ランチメニュー>*", r.URL, r.Name, r.Description, r.LunchURL)
 	info := slack.NewTextBlockObject("mrkdwn", infoText, false, false)
@@ -61,8 +63,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 	}
 
 	msgOptionBlock := buildMsgOptionBlock(restaurants)
-	// TODO: ホットペッパーの画像に変えておく
-	msgOptionIconURL := slack.MsgOptionIconURL("https://pbs.twimg.com/profile_images/1146470842546548737/D9rq59or_200x200.jpg")
+	msgOptionIconURL := slack.MsgOptionIconURL(botImageURL)
 
 	if _, _, err := s.client.PostMessage(channelID, msgOptionBlock, msgOptionIconURL); err != nil {
 		return fmt.Errorf("failed to post message: %s", err)
