@@ -74,7 +74,8 @@ type responseShop struct {
 	}
 }
 
-func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
+// Fetch API結果を全て返す
+func (h *HotPepper) Fetch(keyword string) ([]Restaurant, error) {
 	values := url.Values{}
 	values.Add("key", h.key)       // APIキー
 	values.Add("keyword", keyword) // 検索ワード
@@ -115,8 +116,9 @@ func (h *HotPepper) fetch(keyword string) ([]Restaurant, error) {
 	return restaurants, nil
 }
 
-func (h *HotPepper) fetchRandom(keyword string, limit int) ([]Restaurant, error) {
-	restaurants, err := h.fetch(keyword)
+// FetchRandom API結果を先頭からlimit件ランダムで返す
+func (h *HotPepper) FetchRandom(keyword string, limit int) ([]Restaurant, error) {
+	restaurants, err := h.Fetch(keyword)
 	if len(restaurants) < 1 {
 		return []Restaurant{}, err
 	}

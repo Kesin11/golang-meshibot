@@ -54,7 +54,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 
 	// 検索ワード
 	keyword := strings[1]
-	restaurants, err := s.restaurantClient.fetchRandom(keyword, resultLimit)
+	restaurants, err := s.restaurantClient.FetchRandom(keyword, resultLimit)
 	if err != nil {
 		return fmt.Errorf("failed to fetch restaurant: %s", err)
 	}
@@ -82,7 +82,7 @@ func (s *SlackListener) isMentionToBot(strings []string) bool {
 
 // RestaurantClient レストラン取得のAPIクライアントを差し替え可能にするため
 type RestaurantClient interface {
-	fetchRandom(keyword string, limit int) ([]Restaurant, error)
+	FetchRandom(keyword string, limit int) ([]Restaurant, error)
 }
 
 // SlackListener RTMとbotからの返信を扱う
