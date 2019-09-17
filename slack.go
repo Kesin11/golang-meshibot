@@ -101,7 +101,10 @@ func (s SlackListener) ListenAndResponse() error {
 		switch ev := msg.Data.(type) {
 		case *slack.MessageEvent:
 			spew.Dump(ev)
-			s.handleMessage(ev.Msg, rtm)
+			err := s.handleMessage(ev.Msg, rtm)
+			if err != nil {
+				return err
+			}
 
 		case *slack.RTMError:
 			return fmt.Errorf("Error: %s", ev.Error())

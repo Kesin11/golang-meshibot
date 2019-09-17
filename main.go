@@ -34,6 +34,7 @@ func _main(args []string) int {
 		restaurantClient: hotPepper,
 	}
 
-	slackListener.ListenAndResponse()
+	_ = slackListener.ListenAndResponse()
+
 	return 0
 }
