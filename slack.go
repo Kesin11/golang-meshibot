@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nlopes/slack"
 )
 
@@ -97,7 +96,6 @@ func (s SlackListener) ListenAndResponse() error {
 	for msg := range rtm.IncomingEvents {
 		switch ev := msg.Data.(type) {
 		case *slack.MessageEvent:
-			spew.Dump(ev)
 			err := s.handleMessage(ev.Msg, rtm)
 			if err != nil {
 				return err
