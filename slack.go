@@ -74,10 +74,7 @@ func (s *SlackListener) handleMessage(msg slack.Msg, rtm *slack.RTM) error {
 }
 
 func (s *SlackListener) isMentionToBot(strings []string) bool {
-	if strings[0] == fmt.Sprintf("<@%v>", s.botUserID) {
-		return true
-	}
-	return false
+	return strings[0] == fmt.Sprintf("<@%v>", s.botUserID)
 }
 
 // RestaurantClient レストラン取得のAPIクライアントを差し替え可能にするため
@@ -101,7 +98,10 @@ func (s SlackListener) ListenAndResponse() error {
 		switch ev := msg.Data.(type) {
 		case *slack.MessageEvent:
 			spew.Dump(ev)
-			s.handleMessage(ev.Msg, rtm)
+			err := s.handleMessage(ev.Msg, rtm)
+			if err != nil {
+				return err
+			}
 
 		case *slack.RTMError:
 			return fmt.Errorf("Error: %s", ev.Error())
