@@ -1,0 +1,42 @@
+name: CI
+on: [push]
+
+jobs:
+  checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        version: 1.13
+
+    - uses: actions/checkout@master
+
+    - name: Install dependencies
+      env:
+        GOPATH: /home/runner/work
+      run: go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+
+    - name: golangci-lint
+      env:
+        GOPATH: /home/runner/work
+      run: ${GOPATH}/bin/golangci-lint run
+  
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        version: 1.13
+
+    - uses: actions/checkout@master
+
+    - name: Build
+      env:
+        GOPATH: /home/runner/work
+      run: go build
